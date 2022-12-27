@@ -4,11 +4,11 @@ from numba import njit, float64, int64, jit
 # SC_mat_e : shape func. coeff. of each element
 
 @njit("void(float64[:,:,::1],int32[:,::1],float64[:,::1],float64[:,:,::1],int64[:,::1],float64[::1],int64)")
-def M_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, M_RC, M_data, p_num):  # 임의로 shape function coefficient matrix라 명명
+def M_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, M_RC, M_data, p_num): 
     count_sparse = 0
     TT_E = len(ele_id)
 
-    # TODO element for 문
+    
     for ele in range(TT_E):
         nodes = ele_id[ele]
         # x1,x2,x3 = init_pos[n1,0],init_pos[n2,0],init_pos[n3,0]
@@ -17,17 +17,16 @@ def M_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, M_RC, M_data, p_num):  # �
         Q_e = PQ_detJ_e[ele,1]
         J_e = PQ_detJ_e[ele,2]
 
-        # TODO Local matrix 제작을 위한 위한 9x9 for문
-        SC_mat = SC_mat_e[ele]# 각 요소 9x9 역행렬
-        for i in range(3):# 행
-            row = nodes[i]# 행 global number
+
+        SC_mat = SC_mat_e[ele]
+        for i in range(3):
+            row = nodes[i]
             c1, c2, c3 = SC_mat[0, i], SC_mat[1, i], SC_mat[2, i]
-            for j in range(3): # 열
+            for j in range(3):
                 cc1, cc2, cc3 = SC_mat[0, j], SC_mat[1, j], SC_mat[2, j]
                 col = nodes[j]
                 NN = 0
                 for k in range(3):
-                    # TODO Gaussian quadrature 3x3 for 문
                     P = P_e[k]
                     Q = Q_e[k]
                     J = J_e[k]
@@ -36,7 +35,6 @@ def M_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, M_RC, M_data, p_num):  # �
                     NN_with_gp = Ni_with_gp * Nj_with_gp
                     NN += 1/3 * NN_with_gp * J
 
-                # TODO Global matrix data set 제작
                 M_RC[0, count_sparse] = row
                 M_RC[1, count_sparse] = col
                 M_data[count_sparse] = NN
@@ -59,7 +57,7 @@ def M_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, M_RC, M_data, p_num):  # �
 
 
 @njit("void(float64[:,:,::1],int32[:,::1],float64[:,::1],float64[:,:,::1],int64[:,::1],float64[::1],int64)")
-def A_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, A_RC, A_data, p_num):  # 임의로 shape function coefficient matrix라 명명
+def A_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, A_RC, A_data, p_num):  
     count_sparse = 0
     TT_E = len(ele_id) #TODO 여기부터
 
@@ -73,17 +71,16 @@ def A_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, A_RC, A_data, p_num):  # �
         Q_e = PQ_detJ_e[ele,1]
         J_e = PQ_detJ_e[ele,2]
 
-        # TODO Local matrix 제작을 위한 위한 9x9 for문
-        SC_mat = SC_mat_e[ele]# 각 요소 9x9 역행렬
+        SC_mat = SC_mat_e[ele]
         for i in range(3):
-            row = nodes[i]# 행 global number
+            row = nodes[i]
             # row_x = init_pos[i,0]
             # row_y = init_pos[i,1]
 
             # TODO Boundary condition
             c1, c2, c3 = SC_mat[0, i], SC_mat[1, i], SC_mat[2, i]
             for j in range(3):
-                cc1, cc2, cc3 = SC_mat[0, j], SC_mat[1, j], SC_mat[2, j] # 역행렬 coeff
+                cc1, cc2, cc3 = SC_mat[0, j], SC_mat[1, j], SC_mat[2, j]
                 col = nodes[j]
                 NNx = 0
                 NNy = 0
@@ -99,7 +96,6 @@ def A_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, A_RC, A_data, p_num):  # �
                     NNx += 1/3 * NNx_with_gp * J
                     NNy += 1/3 * NNy_with_gp * J
 
-                # TODO Global matrix data set 제작
                 A_RC[0, count_sparse] = row
                 A_RC[1, count_sparse] = col
                 A_data[count_sparse] = NNx
@@ -134,14 +130,12 @@ def R_assembly(SC_mat_e, ele_id, init_pos, PQ_detJ_e, R_vec, p_num):
         Q_e = PQ_detJ_e[ele,1]
         J_e = PQ_detJ_e[ele,2]
 
-        # TODO Local matrix 제작을 위한 위한 9x9 for문
-        SC_mat = SC_mat_e[ele]# 각 요소 9x9 역행렬
+        SC_mat = SC_mat_e[ele]
         for i in range(3):
-            row = nodes[i]# 행 global number
+            row = nodes[i]
             c1, c2, c3 = SC_mat[0, i], SC_mat[1, i], SC_mat[2, i]
             N = 0
             for k in range(3):
-                # TODO Gaussian quadrature 3x3 for 문
                 P = P_e[k]
                 Q = Q_e[k]
                 J = J_e[k]

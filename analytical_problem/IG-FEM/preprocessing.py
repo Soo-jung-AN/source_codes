@@ -15,7 +15,7 @@ def reshape(init_pos, ele_id, alpha):
     #         del_id.append(i)
     # return np.delete(ele_id,del_id,0)
 
-def reshape(undeformed_cood, ele_id, alpha): # alpha is maximum diameter, 3이면 maximum rad의 3배까진 봐주겟다 이거임
+def reshape(undeformed_cood, ele_id, alpha):
     del_id = []
     for i in range(len(ele_id)):
         e1,e2,e3 = ele_id[i]
@@ -34,7 +34,7 @@ def reshape(undeformed_cood, ele_id, alpha): # alpha is maximum diameter, 3이�
 
 
 @njit("void(float64[:,:,::1], int32[:,::1], float64[:,::1])")
-def Get_shf_coef(SC_mat_e, ele_id, init_pos): # 임의로 shape function coefficient matrix라 명명
+def Get_shf_coef(SC_mat_e, ele_id, init_pos):
     Base3x3 = np.zeros((3,3), dtype=np.float64)
     for ele in range(len(ele_id)):
         n1,n2,n3 = ele_id[ele]
@@ -72,5 +72,5 @@ def Get_gp_cood(PQ_detJ_e, ele_id, init_pos):
             J21 = -y1 + y2 # dQ/ds
             J22 = -y1 + y3  # dQ/dt
             det_J = J11 * J22 - J12 * J21
-            PQ_detJ_e[ele,2,i] = det_J # TODO 아마도 element당 하나 값만 있으면 될듯? 확실치 않음
+            PQ_detJ_e[ele,2,i] = det_J 
 
